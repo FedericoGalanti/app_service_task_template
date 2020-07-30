@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Service_Task_Template</string>
+    <string name="channel_description">Notification channel for scanner</string>
+    <string name="task_switch_descr">Attivazione task</string>
+    <string name="service_switch_descr">Attivazione Servizio</string>
+</resources>
+
