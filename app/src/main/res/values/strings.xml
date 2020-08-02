@@ -4,5 +4,8 @@
     <string name="task_switch_descr">Attivazione task</string>
     <string name="service_switch_descr">Attivazione Servizio</string>
     <string name="channel_name">NOTIFICATION_CHANNEL</string>
+    <string name="item_title">Item_title</string>
+    <string name="item_description_1">Item_description_1</string>
+    <string name="item_description_2">Item_description_2</string>
 </resources>
 

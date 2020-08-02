@@ -6,25 +6,41 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ListView;
 import android.widget.Switch;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
+    /*
+        TODO: List component development (in referral to BTTOY: this will be use to list visible devices
+        from BLE scanning
+     */
     protected static final String TAG = "MainActivity";
     private BroadcastReceiver receiver = null;
     private Switch taskSw, serviceSw;
+    private ListCustomAdapter listCustomAdapter;
+    private ArrayList<ListExampleItem> source;
+    private ListView listView;
     private boolean compliant;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        source = new ArrayList<ListExampleItem>();
+        source.add(new ListExampleItem("Io", "Sono io", "Me meco"));
         setContentView(R.layout.activity_main);
 
         taskSw = findViewById(R.id.taskSwitch);
         serviceSw = findViewById(R.id.serviceSwitch);
+        listView = findViewById(R.id.viewForLists);
 
+        listCustomAdapter = new ListCustomAdapter(this, source);
+        listView.setAdapter(listCustomAdapter);
         /*
             Setting up listeners for switches
          */
