@@ -13,8 +13,12 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import java.util.Random;
+
 public class MyService extends Service {
     protected static final String TAG = "MyService";
+    private String[] examples = {"Johnny bravo rulez", "Fede dev logged", "Jigen shot first"};
+    private String[] status = {"In:", "Out:"};
     private Handler handler = null;
     private Thread worker = null;
     private static final String CHANNEL_ID = "001";
@@ -37,15 +41,11 @@ public class MyService extends Service {
             @Override
             public void run() {
                 Log.d(TAG, "Running service job!");
-                tellMain("Service: Hello from Service!!");
-                handler.postDelayed(this, 20000l);
+                tellMain(status[new Random().nextInt(status.length)] + " " + examples[new Random().nextInt(examples.length)]);
+                handler.postDelayed(this, 5000L);
             }
         });
-        if (startServiceJob()){
-            Log.d(TAG, "Job started!");
-            tellMain("Debug: Job started!");
-        }
-        else {
+        if (!startServiceJob()) {
             Log.d(TAG, "Some problem happened with worker!");
             tellMain("Debug: some problem happened with worker!");
         }
@@ -60,13 +60,11 @@ public class MyService extends Service {
 
     private boolean startServiceJob(){
         worker.start();
-        if (!worker.isAlive()){
-            return false;
-        }
-        return true;
+        return worker.isAlive();
     }
 
     private void stopServiceJob(){
+        handler.removeCallbacksAndMessages(null);
         if (worker.isAlive()){
             try {
                 worker.join();
@@ -74,7 +72,6 @@ public class MyService extends Service {
                 e.printStackTrace();
             }
         }
-        handler.removeCallbacksAndMessages(null);
     }
 
     private void tellMain(String msg){

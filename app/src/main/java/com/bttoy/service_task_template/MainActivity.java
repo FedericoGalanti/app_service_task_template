@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     /*
@@ -22,24 +23,22 @@ public class MainActivity extends AppCompatActivity {
     protected static final String TAG = "MainActivity";
     private BroadcastReceiver receiver = null;
     private Switch taskSw, serviceSw;
+    private ArrayList<ListExampleItem> sauce = new ArrayList<>();
     private ListCustomAdapter listCustomAdapter;
-    private ArrayList<ListExampleItem> source;
     private ListView listView;
-    private boolean compliant;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        source = new ArrayList<ListExampleItem>();
-        source.add(new ListExampleItem("Io", "Sono io", "Me meco"));
         setContentView(R.layout.activity_main);
 
         taskSw = findViewById(R.id.taskSwitch);
         serviceSw = findViewById(R.id.serviceSwitch);
         listView = findViewById(R.id.viewForLists);
-
-        listCustomAdapter = new ListCustomAdapter(this, source);
+        sauce.clear();
+        sauce.add(new ListExampleItem("Dev", "Message", "Proto"));
+        listCustomAdapter = new ListCustomAdapter(this, sauce);
         listView.setAdapter(listCustomAdapter);
         /*
             Setting up listeners for switches
@@ -69,10 +68,35 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.d(TAG, "Received intent!");
-                String[] message = intent.getStringExtra("update").split(":");
+                String[] message = Objects.requireNonNull(intent.getStringExtra("update")).split(":");
+                updateList(message);
             }
         };
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(receiver, new IntentFilter("SERVICE_UPDATE"));
+    }
+
+    public void updateList(String[] message) {
+        runOnUiThread(() -> {
+            if (message[0].equals("In") || message[0].equals("Out")) {
+                String[] newItemString = message[1].trim().split(" ");
+                ListExampleItem newItem = new ListExampleItem(newItemString[0], newItemString[1], newItemString[2]);
+
+                switch (message[0]) {
+                    case "In": {
+                        if (!sauce.contains(newItem)) {
+                            sauce.add(newItem);
+                            listCustomAdapter.notifyDataSetChanged();
+                        }
+                        break;
+                    }
+                    case "Out": {
+                        sauce.remove(newItem);
+                        listCustomAdapter.notifyDataSetChanged();
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -86,6 +110,5 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(receiver);
     }
-
 
 }
